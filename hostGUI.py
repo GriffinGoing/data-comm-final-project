@@ -1,6 +1,7 @@
 import sys
 import os
 from tkinter import *
+from tkinter import messagebox
 import tkinter.font as tkFont
 #import tkintertable
 import subprocess
@@ -133,8 +134,14 @@ class hostGUI:
         hostname = self.hostnameText.get()
         #speed = self.speedMenu.get()
         print("Connecting to " + serverHostname + ":" + port + " as " + username + " from " + hostname + " at speed <later>...")
-        self.client.connect(serverHostname, port, username)
-        print("Connected...")
+        connectionResult = self.client.connect(serverHostname, port, username)
+        if (connectionResult == 1):
+            messagebox.showerror(title="Server Connection", message="Connection Refused")
+            return
+        if (connectionResult == 2):
+            messagebox.showerror(title="Server Authentication", message="Authentication Failed")
+        else:
+            print("Connected...")
 
     def search(self):
         print("SEARCH FUNCTION CODE STANDIN")

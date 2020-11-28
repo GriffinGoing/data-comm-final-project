@@ -12,6 +12,15 @@ class HostClient:
         self.ftp = FTP('')
 
     def connect(self, URI, PORT, USERNAME):
-        self.ftp.connect(URI, int(PORT))
-        self.ftp.login(user=USERNAME, passwd="")
+        try:
+            self.ftp.connect(URI, int(PORT))
+        except:
+            return(1) # connection refused
+
+        try:
+            self.ftp.login(user=USERNAME, passwd="")
+        except:
+            return(2) # auth failure
+
+        return(0) # all good, connection established
 
