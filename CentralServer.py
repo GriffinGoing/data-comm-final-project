@@ -39,7 +39,7 @@ class CustomizedFTPHandler(FTPHandler):
 
 # The port the FTP server will listen on.
 # This must be greater than 1023 unless you run this script as root.
-FTP_PORT = 2121
+FTP_PORT = 3131
 
 '''
 NOT WORRIED ABOUT AUTHENTICATING THIS SERVER, DOESN'T SEEM MAJOR IN THE SCOPE OF THE PROJECT.
@@ -98,6 +98,12 @@ def main():
     # Define a new user having full r/w permissions.
     authorizer.add_user(FTP_USER, FTP_PASSWORD, FTP_DIRECTORY, perm='r')
 
+    # add some users for testing
+    authorizer.add_user("user1", "", ".", perm='r')
+    authorizer.add_user("user2", "", ".", perm='r')
+
+
+
     handler = CustomizedFTPHandler
     handler.authorizer = authorizer
 
@@ -107,7 +113,7 @@ def main():
     # Optionally specify range of ports to use for passive connections.
     #handler.passive_ports = range(60000, 65535)
 
-    address = ('', FTP_PORT)
+    address = ('127.0.0.1', FTP_PORT)
     server = FTPServer(address, handler)
 
     server.max_cons = 256

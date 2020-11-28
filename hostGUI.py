@@ -32,6 +32,9 @@ def runServer():
 class hostGUI:
     def __init__(self):
 
+        '''
+        The host's FTP client instance
+        '''
         self.client = HostClient()
 
         '''
@@ -148,7 +151,15 @@ def main():
 
 if __name__ == '__main__':
     try:
-        #Thread(target = runServer).start()
+        '''
+        Start an FTP server on this machine
+        '''
+        # ONLY COMMENTED OUT BECAUSE RUNNING THIS ON THE SAME MACHINE AS THE CENTRAL SERVER IS ASS
+        Thread(target = runServer).start()
+
+        '''
+        Start the host GUI (and therefore client) on this machine
+        '''
         Thread(target = main).start()
     except:
         exit(0)
