@@ -8,6 +8,7 @@ import runpy
 from threading import Thread
 sys.path.append('..')
 import hostFTPServer
+from HostClient import *
 
 
 # REQUIRE PYTHON 3
@@ -30,6 +31,13 @@ def runServer():
 
 class hostGUI:
     def __init__(self):
+
+        self.client = HostClient()
+
+        '''
+        Assemble the GUI
+        '''
+
         self.top = Tk()
         self.top.title("GV-Napster Host")
         #self.top.geometry("700x1200")
@@ -122,6 +130,8 @@ class hostGUI:
         hostname = self.hostnameText.get()
         #speed = self.speedMenu.get()
         print("Connecting to " + serverHostname + ":" + port + " as " + username + " from " + hostname + " at speed <later>...")
+        self.client.connect(serverHostname, port, username)
+        print("Connected...")
 
     def search(self):
         print("SEARCH FUNCTION CODE STANDIN")
@@ -138,7 +148,7 @@ def main():
 
 if __name__ == '__main__':
     try:
-        Thread(target = runServer).start()
+        #Thread(target = runServer).start()
         Thread(target = main).start()
     except:
         exit(0)
