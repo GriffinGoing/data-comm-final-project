@@ -2,6 +2,7 @@ import sys
 import os
 from tkinter import *
 import tkinter.font as tkFont
+#import tkintertable
 import subprocess
 import runpy
 from threading import Thread
@@ -17,13 +18,14 @@ def requireVersion():
 
 def runServer():
     requireVersion()
-    #runpy.run_module(mod_name = 'server')
-    os.system("gnome-terminal -x python server.py")
+    #runpy.run_module(mod_name = 'server') # this doesn't listen properly, and doesn't offer logging. below works for gnome terms
+    os.system("gnome-terminal python server.py")
 
 class hostGUI:
     def __init__(self):
         self.top = Tk()
         self.top.title("GV-Napster Host")
+        #self.top.geometry("700x1200")
 
         self.fontStyle = tkFont.Font(root=self.top, family="Helvetica", size=20)
 
@@ -71,12 +73,27 @@ class hostGUI:
 
         self.connectButton = Button(self.connectionLabelFrame, text="Connect")
 
-        # to be deleted later, just placeholders
-        self.left = Label(self.searchLabelFrame, text="Inside the LabelFrame")
-        self.left.pack()
+        self.searchKeywordFrame = Frame(self.searchLabelFrame)
+        self.keywordLabel = Label(self.searchKeywordFrame, text="Keyword:")
+        self.keywordLabel.grid(row=0, column=0)
+        self.keywordText = Entry(self.searchKeywordFrame)
+        self.keywordText.grid(row=0, column=1)
+        self.searchButton = Button(self.searchKeywordFrame, text="Search")
+        self.searchButton.grid(row=0, column=2)
 
-        self.left = Label(self.FTPLabelFrame, text="Inside the LabelFrame")
-        self.left.pack()
+        # working on a table, just a placeholder
+        self.searchTable = Text(self.searchLabelFrame, height=7)
+
+        self.enterCommandFrame = Frame(self.FTPLabelFrame)
+        self.enterCommandLabel = Label(self.enterCommandFrame, text="Enter Command:")
+        self.enterCommandLabel.grid(row=0, column=0)
+        self.enterCommandText = Entry(self.enterCommandFrame)
+        self.enterCommandText.grid(row=0, column=1)
+        self.enterCommandButton = Button(self.enterCommandFrame, text="Go")
+        self.enterCommandButton.grid(row=0, column=2)
+
+        # needs format specifics but will work
+        self.commandTextOutput = Text(self.FTPLabelFrame, height=7)
 
         '''
         pack all frames in proper order (top to bottom)
@@ -86,6 +103,12 @@ class hostGUI:
         self.speedMenu.pack(side=RIGHT)
         self.speedFrame.pack()
         self.connectButton.pack(side=BOTTOM)
+        self.searchKeywordFrame.pack()
+        self.searchTable.pack()
+        self.enterCommandFrame.pack()
+        self.commandTextOutput.pack()
+
+
 
 
 def main():
