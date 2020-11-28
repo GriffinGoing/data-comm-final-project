@@ -18,7 +18,7 @@ an operation, after connection, and if ghe user's input was invalid.
 
 def mainMenu():
     userChoice = 0
-    choices = ['1', '2', '3', '4', '5']
+    choices = ['1', '2', '3', '4', '5', '6']
     while (userChoice not in choices):
         # print menu
         print("    MAIN MENU    ")
@@ -29,6 +29,7 @@ def mainMenu():
         print("3. UPLOAD")
         print("4. DOWNLOAD")
         print("5. QUIT")
+        print("6. ADD USER")
 
         # get user input
         userChoice = input()
@@ -38,6 +39,13 @@ def mainMenu():
             print("That is not a valid choice. Returning to menu...")
 
     return userChoice
+
+
+def addUser(ftp):
+    print("Enter user to add:")
+    username = input()
+    ftp.sendcmd("SITE ADDUSER " + username)
+    print("Maybe added username " + username)
 
 '''
 UPLOAD FILE
@@ -155,6 +163,9 @@ def main():
 
       elif (userChoice == 5):
         ftp.quit()
+
+      elif (userChoice == 6):
+        addUser(ftp)
 
 
 # execute main when run

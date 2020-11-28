@@ -7,7 +7,7 @@ import subprocess
 import runpy
 from threading import Thread
 sys.path.append('..')
-import server
+import hostFTPServer
 
 
 # REQUIRE PYTHON 3
@@ -25,7 +25,7 @@ def runServer():
     #runpy.run_module(mod_name = 'server') # this doesn't listen properly, and doesn't offer logging. below works for gnome terms
     #os.system("gnome-terminal -x python server.py")
     #subprocess.run(["python", "server.py"], )
-    server.main()
+    hostFTPServer.main()
 
 
 class hostGUI:
