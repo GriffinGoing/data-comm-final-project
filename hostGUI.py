@@ -18,6 +18,10 @@ def requireVersion():
 
 def runServer():
     requireVersion()
+    '''
+    a few different methods to run the subprocess. not worth running it separately,
+    hence the basic function call.
+    '''
     #runpy.run_module(mod_name = 'server') # this doesn't listen properly, and doesn't offer logging. below works for gnome terms
     #os.system("gnome-terminal -x python server.py")
     #subprocess.run(["python", "server.py"], )
