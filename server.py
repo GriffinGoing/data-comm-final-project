@@ -2,6 +2,14 @@ from pyftpdlib.authorizers import DummyAuthorizer
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer
 import csv
+import sys
+
+# REQUIRE PYTHON 3
+def requireVersion():
+    if (sys.version_info[0] != 3):
+        print("This script requires Python version 3.x")
+        sys.exit(1)
+
 
 '''
 HOSTS ACCESS EACH OTHER, BUT ONLY FOR DOWNLOADS, THIS SERVER IS ONLY THE MIDDLEMAN FOR P2P FILESHARING. IE, THIS SERVER ONLY MAINTAINS A DB OF FILENAMES AND DESCRIPTIONS, BUT
@@ -61,6 +69,9 @@ TO DO: A TABLE MAPPING FILENAMES TO HOSTS
 
 
 def main():
+
+    requireVersion()
+
     authorizer = DummyAuthorizer()
 
     # Define a new user having full r/w permissions.
@@ -115,3 +126,4 @@ Logging users...
 
 if __name__ == '__main__':
     main()
+    print("Exiting...")
