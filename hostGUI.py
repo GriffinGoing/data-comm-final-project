@@ -1,6 +1,6 @@
 import sys
 import os
-import tkinter
+from tkinter import *
 import subprocess
 import runpy
 from threading import Thread
@@ -22,8 +22,24 @@ def runServer():
 
 class hostGUI:
     def __init__(self):
-        self.top = tkinter.Tk()
+        self.top = Tk()
         self.top.title("GV-Napster Host")
+
+        self.connectionLabelFrame = LabelFrame(self.top, text = "Connection")
+        self.connectionLabelFrame.pack(fill="both", expand="yes")
+        self.searchLabelFrame = LabelFrame(self.top, text = "Search")
+        self.searchLabelFrame.pack(fill="both", expand="yes")
+        self.FTPLabelFrame = LabelFrame(self.top, text = "FTP")
+        self.FTPLabelFrame.pack(fill="both", expand="yes")
+
+        self.left = Label(self.connectionLabelFrame, text="Inside the LabelFrame")
+        self.left.pack()
+
+        self.left = Label(self.searchLabelFrame, text="Inside the LabelFrame")
+        self.left.pack()
+
+        self.left = Label(self.FTPLabelFrame, text="Inside the LabelFrame")
+        self.left.pack()
 
 
 def main():
