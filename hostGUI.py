@@ -3,7 +3,7 @@ import os
 from tkinter import *
 from tkinter import messagebox
 import tkinter.font as tkFont
-#import tkintertable
+from tkintertable import TableCanvas, TableModel
 import subprocess
 import runpy
 from threading import Thread
@@ -101,7 +101,10 @@ class hostGUI:
         self.searchButton.grid(row=0, column=2)
 
         # working on a table, just a placeholder
-        self.searchTable = Text(self.searchLabelFrame, height=7)
+        self.searchFrame = Frame(self.searchLabelFrame)
+        self.searchTable = TableCanvas(self.searchFrame)
+        self.searchTable.importCSV("files.csv")
+        #self.searchTable = Text(self.searchLabelFrame, height=7)
 
         self.enterCommandFrame = Frame(self.FTPLabelFrame)
         self.enterCommandLabel = Label(self.enterCommandFrame, text="Enter Command:")
@@ -122,8 +125,10 @@ class hostGUI:
         self.speedMenu.pack(side=RIGHT)
         self.speedFrame.pack()
         self.connectButton.pack(side=BOTTOM)
+        self.searchFrame.pack()
+        self.searchTable.show()
         self.searchKeywordFrame.pack()
-        self.searchTable.pack()
+        #self.searchTable.pack()
         self.enterCommandFrame.pack()
         self.commandTextOutput.pack()
 
