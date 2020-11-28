@@ -75,7 +75,7 @@ def main():
     authorizer = DummyAuthorizer()
 
     # Define a new user having full r/w permissions.
-    authorizer.add_user(FTP_USER, FTP_PASSWORD, FTP_DIRECTORY, perm='elradfmw')
+    authorizer.add_user(FTP_USER, FTP_PASSWORD, FTP_DIRECTORY, perm='r')
 
     handler = FTPHandler
     handler.authorizer = authorizer

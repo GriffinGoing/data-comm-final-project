@@ -118,5 +118,8 @@ def main():
     gui.top.mainloop()
 
 if __name__ == '__main__':
-    Thread(target = runServer).start()
-    Thread(target = main).start()
+    try:
+        Thread(target = runServer).start()
+        Thread(target = main).start()
+    except:
+        exit(0)
