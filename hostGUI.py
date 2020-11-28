@@ -27,6 +27,7 @@ def runServer():
     #subprocess.run(["python", "server.py"], )
     server.main()
 
+
 class hostGUI:
     def __init__(self):
         self.top = Tk()
@@ -77,14 +78,14 @@ class hostGUI:
         self.speedChoices = { 'Ethernet'}
         self.speedMenu = OptionMenu(self.speedFrame, self.speedSelection, *self.speedChoices)
 
-        self.connectButton = Button(self.connectionLabelFrame, text="Connect")
+        self.connectButton = Button(self.connectionLabelFrame, text="Connect", command=self.connect)
 
         self.searchKeywordFrame = Frame(self.searchLabelFrame)
         self.keywordLabel = Label(self.searchKeywordFrame, text="Keyword:")
         self.keywordLabel.grid(row=0, column=0)
         self.keywordText = Entry(self.searchKeywordFrame)
         self.keywordText.grid(row=0, column=1)
-        self.searchButton = Button(self.searchKeywordFrame, text="Search")
+        self.searchButton = Button(self.searchKeywordFrame, text="Search", command=self.search)
         self.searchButton.grid(row=0, column=2)
 
         # working on a table, just a placeholder
@@ -95,7 +96,7 @@ class hostGUI:
         self.enterCommandLabel.grid(row=0, column=0)
         self.enterCommandText = Entry(self.enterCommandFrame)
         self.enterCommandText.grid(row=0, column=1)
-        self.enterCommandButton = Button(self.enterCommandFrame, text="Go")
+        self.enterCommandButton = Button(self.enterCommandFrame, text="Go", command=self.runFTPCommand)
         self.enterCommandButton.grid(row=0, column=2)
 
         # needs format specifics but will work
@@ -113,6 +114,20 @@ class hostGUI:
         self.searchTable.pack()
         self.enterCommandFrame.pack()
         self.commandTextOutput.pack()
+
+    def connect(self):
+        serverHostname = self.serverHostnameText.get()
+        port = self.portText.get()
+        username = self.userNameText.get()
+        hostname = self.hostnameText.get()
+        #speed = self.speedMenu.get()
+        print("Connecting to " + serverHostname + ":" + port + " as " + username + " from " + hostname + " at speed <later>...")
+
+    def search(self):
+        print("SEARCH FUNCTION CODE STANDIN")
+
+    def runFTPCommand(self):
+        print("Run FTP Command stand-in")
 
 
 
