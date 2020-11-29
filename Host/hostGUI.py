@@ -40,6 +40,11 @@ class hostGUI:
         self.client = HostClient()
 
         '''
+        Boolean for whether we're searching or not. defines the info to load into the table
+        '''
+        self.searching = False
+
+        '''
         Assemble the GUI
         '''
 
@@ -101,8 +106,10 @@ class hostGUI:
         self.keywordText.grid(row=0, column=1)
         self.searchButton = Button(self.searchKeywordFrame, text="Search", command=self.search)
         self.searchButton.grid(row=0, column=2)
+        self.resetSearchButton = Button(self.searchKeywordFrame, text="Reset", command=self.resetSearch)
+        self.resetSearchButton.grid(row=0, column=3)
         self.updateFileIndexButton = Button(self.searchKeywordFrame, text="Update File Index", command=self.updateFileIndex)
-        self.updateFileIndexButton.grid(row=0, column=3)
+        self.updateFileIndexButton.grid(row=0, column=4)
 
 
         # working on a table, just a placeholder
@@ -156,28 +163,93 @@ class hostGUI:
 
 
     def search(self):
-        print("SEARCH FUNCTION CODE STANDIN")
+        print("Searching for keyword in current file index...")
+        self.searching = True
+
+        # perform search
+        keyword = self.keywordText.get()
+        if (keyword == ""):
+            return
+
+        self.searchFileIndex(keyword)
+
+
+        #show results in table
+        self.searchTable.importCSV("searchResults.csv")
+        self.searchTable.redraw()
+
+
+    def searchFileIndex(self, keyword):
+        self.resetSearchIndex()
+        matches = []
+        i = 0
+        with open('files.csv') as csvfile:
+            readCSV = csv.reader(csvfile, delimiter=',')
+            for row in readCSV:
+                #print(row) # print the array at that row
+                #print(row[0]) # print filename of that row
+                #print(row[0],row[1],row[2],) # print filename, description, and path of row
+                if (keyword in row[0]):
+                    matches.append(row)
+                    i = i + 1
+        print("Number of Files Matching Keyword: " + str(i))
+
+        with open('searchResults.csv', 'w') as searchResults:
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            writer = csv.writer(searchResults)
+            writer.writerow(row)
+            for row in matches:
+                print(row)
+                #row = row[0] + "," + row[1] + "," + row[2] + "\n"
+                writer.writerow(row)
+
+
+    def resetSearch(self):
+        self.searching = False
+        self.resetSearchIndex()
+        self.searchTable.importCSV("files.csv")
+        self.searchTable.redraw()
 
     def runFTPCommand(self):
         print("Run FTP Command stand-in")
 
+
     def updateFileIndex(self):
         print("Updating file index...")
+        print("SEARCHING: " + str(self.searching))
         self.client.fetchFileIndex()
-        self.searchTable.importCSV("files.csv")
-        self.searchTable.redraw()
+        if (self.searching == False):
+            self.searchTable.importCSV("files.csv")
+            self.searchTable.redraw()
+
         print("File index updated...")
 
-    def resetFileIndex(self):
-        with open('files.csv', 'w', newline='') as files:
-            fieldnames = ['FILENAME', 'DESCRIPTION', 'LOCATION']
-            writer = csv.DictWriter(files, fieldnames=fieldnames)
 
-            writer.writeheader()
+    def resetFileIndex(self):
+        with open('files.csv', 'w') as files:
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            writer = csv.writer(files)
+
+            writer.writerow(row)
+            writer.writerow(['   '])
+
+    def resetSearchIndex(self):
+        with open('searchResults.csv', 'w') as searchResults:
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            writer = csv.writer(searchResults)
+
+            writer.writerow(row)
+            writer.writerow(['   '])
+
+
+
 
     def onClose(self):
-        print("Resetting file index and quitting...")
+        print("Resetting file index...")
         self.resetFileIndex()
+        print("Resetting search results...")
+        self.resetSearchIndex()
+        print("Quitting...")
         self.top.destroy()
         sys.exit(0)
 

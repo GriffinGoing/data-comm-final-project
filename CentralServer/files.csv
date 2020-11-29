@@ -1,2 +1,7 @@
 FILENAME,DESCRIPTION,LOCATION
-test.txt,file description,host/dir/files
+test.txt,file description,0.0.0.0
+salt.png,a picture of salt,0.0.0.1
+beach.jpg,surf's up bro!,0.0.0.2
+spreadsheet.xml,number crunching,0.0.0.3
+memo1.docx,a work memo,0.0.0.4
+memo2.docx,another work memo,0.0.0.5
