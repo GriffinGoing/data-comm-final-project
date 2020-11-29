@@ -1,5 +1,6 @@
 import sys
 import os
+import csv
 from tkinter import *
 from tkinter import messagebox
 import tkinter.font as tkFont
@@ -44,6 +45,7 @@ class hostGUI:
 
         self.top = Tk()
         self.top.title("GV-Napster Host")
+        self.top.protocol("WM_DELETE_WINDOW", self.onClose)
         #self.top.geometry("700x1200")
 
         self.fontStyle = tkFont.Font(root=self.top, family="Helvetica", size=20)
@@ -150,6 +152,8 @@ class hostGUI:
             messagebox.showerror(title="Server Authentication", message="Authentication Failed")
         else:
             print("Connected...")
+            self.updateFileIndex()
+
 
     def search(self):
         print("SEARCH FUNCTION CODE STANDIN")
@@ -164,6 +168,19 @@ class hostGUI:
         self.searchTable.redraw()
         print("File index updated...")
 
+    def resetFileIndex(self):
+        with open('files.csv', 'w', newline='') as files:
+            fieldnames = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            writer = csv.DictWriter(files, fieldnames=fieldnames)
+
+            writer.writeheader()
+
+    def onClose(self):
+        print("Resetting file index and quitting...")
+        self.resetFileIndex()
+        self.top.destroy()
+        sys.exit(0)
+
 
 
 
@@ -175,6 +192,7 @@ if __name__ == '__main__':
     try:
         '''
         Start an FTP server on this machine
+        Try to get this running as a thread UNDER the GUI itself to give the GUI control over it 
         '''
         # ONLY COMMENTED OUT BECAUSE RUNNING THIS ON THE SAME MACHINE AS THE CENTRAL SERVER IS ASS
         Thread(target = runServer).start()

@@ -22,9 +22,15 @@ DOES NOT DO ANY MORE THAN TELL THE HOST WHAT FILES ARE AND WHERE TO FIND THEM (O
 Add handlers for addUser and removeUser to log users as they come and go 
 '''
 proto_cmds = FTPHandler.proto_cmds.copy()
+
 proto_cmds.update(
     {'SITE ADDUSER': dict(perm='', auth=True, arg=True,
       help='Syntax: SITE <SP> ADDUSER <USERNAME>')}
+)
+
+proto_cmds.update(
+    {'SITE ADDFILE': dict(perm='', auth=True, arg=True,
+      help='Syntax: SITE <SP> ADDFILE <FILENAME> <DESCRIPTION>')}
 )
 
 class CustomizedFTPHandler(FTPHandler):
@@ -36,6 +42,14 @@ class CustomizedFTPHandler(FTPHandler):
         print("User [" + username + "] added")
         self.respond("100: Added" + username + "as a user.")
 
+    def ftp_SITE_ADDFILE(self, args):
+        # add a file
+        args = args.split(",")
+        filename = args[0]
+        descriptipn = args[1]
+        location = args[2]
+        addFileToIndex(filename, descriptipn, location)
+        self.respond("100: File Added")
 
 # The port the FTP server will listen on.
 # This must be greater than 1023 unless you run this script as root.
@@ -69,18 +83,31 @@ TO DO: FILE CONTAINING FILENAMES AND DESCRIPTIONS
 '''
 
 # Load the .csv file containing file names and descriptions
-files = {}
-i = 0
-with open('files.csv') as csvfile:
-    readCSV = csv.reader(csvfile, delimiter=',')
-    for row in readCSV:
-        print(row) # print the array at that row
-        #print(row[0]) # print filename of that row
-        #print(row[0],row[1],row[2],) # print filename, description, and path of row
-        files[i] = row
-        i = i + 1
+def loadFileIndex():
+    files = []
+    i = 0
+    with open('files.csv') as csvfile:
+        readCSV = csv.reader(csvfile, delimiter=',')
+        for row in readCSV:
+            print(row) # print the array at that row
+            #print(row[0]) # print filename of that row
+            #print(row[0],row[1],row[2],) # print filename, description, and path of row
+            files.append(row)
+            i = i + 1
+    print("Current Number of Files: " + str(i))
+    return files
 
-print("Current Number of Files: " + str(i))
+def addFileToIndex(filename, description, location):
+    with open('files.csv', 'a') as files:
+        row = filename + "," +  description + "," + location
+        files.write(row)
+    loadFileIndex()
+
+
+def saveFileIndex():
+    return 0
+
+
 #print(files)
 #print(readCSV)
 
