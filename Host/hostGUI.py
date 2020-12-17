@@ -260,7 +260,7 @@ class hostGUI:
         print("Number of Files Matching Keyword: " + str(i))
 
         with open('searchResults.csv', 'w') as searchResults:
-            row = ['FILENAME', 'DESCRIPTION', 'LOCATION', 'PORT']
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION', 'PORT', 'SPEED']
             writer = csv.writer(searchResults)
             writer.writerow(row)
             for row in matches:
