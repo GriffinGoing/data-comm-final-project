@@ -1,5 +1,7 @@
 from ftplib import FTP
 import sys
+from tkinter import messagebox
+
 
 # REQUIRE PYTHON 3
 def requireVersion():
@@ -26,8 +28,22 @@ class HostClient:
 
 
     def fetchFileIndex(self):
-        filename = "files.csv"
-        localfile = open(filename, 'wb')
-        self.ftp.retrbinary('RETR ' + filename, localfile.write, 1024)
-        localfile.close()
+        try:
+            filename = "files.csv"
+            localfile = open(filename, 'wb')
+            self.ftp.retrbinary('RETR ' + filename, localfile.write, 1024)
+            localfile.close()
+        except:
+            messagebox.showerror(title="No Connection", message="Could not retrieve file index")
+
+
+    def downloadFile(self, filename, location, port):
+        try:
+            self.ftp.connect(location, int(port))
+            self.ftp.login(user="user", passwd="")
+            localfile = open(filename, 'wb')
+            self.ftp.retrbinary('RETR ' + filename, localfile.write, 1024)
+            localfile.close()
+        except:
+            messagebox.showerror(title="Cannot Download", message="Could not connect or download file")
 

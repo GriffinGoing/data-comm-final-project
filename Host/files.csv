@@ -1,2 +1,8 @@
-FILENAME,DESCRIPTION,LOCATION
-   
+FILENAME,DESCRIPTION,LOCATION,PORT,SPEED
+test.txt,file description,0.0.0.0,3000,Ethernet
+salt.png,a picture of salt,0.0.0.1,4500,TL1
+poster.pub,a travel poster,http://travelUS.com,2020,TL1
+beach.jpg,surf's up bro!,0.0.0.2,2000,TL2
+spreadsheet.xml,number crunching,0.0.0.3,3343,Ethernet
+memo1.docx,a work memo,0.0.0.4,5545,Ethernet
+memo2.docx,another work memo,0.0.0.5,6745,TL2

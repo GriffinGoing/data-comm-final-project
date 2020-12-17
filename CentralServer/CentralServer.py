@@ -30,7 +30,7 @@ proto_cmds.update(
 
 proto_cmds.update(
     {'SITE ADDFILE': dict(perm='', auth=True, arg=True,
-      help='Syntax: SITE <SP> ADDFILE <FILENAME> <DESCRIPTION>')}
+      help='Syntax: SITE <SP> ADDFILE <FILENAME> <DESCRIPTION> <LOCATIO> <PORT>')}
 )
 
 class CustomizedFTPHandler(FTPHandler):
@@ -46,9 +46,11 @@ class CustomizedFTPHandler(FTPHandler):
         # add a file
         args = args.split(",")
         filename = args[0]
-        descriptipn = args[1]
+        description = args[1]
         location = args[2]
-        addFileToIndex(filename, descriptipn, location)
+        port = args[3]
+        speed = args[4]
+        addFileToIndex(filename, description, location, port, speed)
         self.respond("100: File Added")
 
 # The port the FTP server will listen on.
