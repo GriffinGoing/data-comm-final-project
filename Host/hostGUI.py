@@ -95,6 +95,13 @@ class hostGUI:
         self.hostnameText = Entry(self.connectionInputs)
         self.hostnameText.grid(row=1, column=4)
 
+        self.speedFrame = Frame(self.connectionLabelFrame)
+        self.connSpeedLabel = Label(self.speedFrame, text="Speed:")
+        self.connSpeedLabel.pack(side=LEFT)
+        self.connSpeedSelection = StringVar(self.top)
+        self.speedChoices = {'Ethernet', "TL1", "TL2"}
+        self.speedMenu = OptionMenu(self.speedFrame, self.connSpeedSelection, *self.speedChoices)
+        self.speedMenu.pack(side=RIGHT)
 
         self.connectButton = Button(self.connectionLabelFrame, text="Connect", command=self.connect)
 
@@ -117,9 +124,10 @@ class hostGUI:
         self.searchTable.importCSV("files.csv")
         #self.searchTable = Text(self.searchLabelFrame, height=7)
 
-        self.runServerFrame = Frame(self.FTPLabelFrame)
-        self.runServerButton = Button(self.runServerFrame, text="Start Server", bg="lawn green")
-        self.runServerButton.pack()
+        #removed because server now starts on GUI init
+        #self.runServerFrame = Frame(self.FTPLabelFrame)
+        #self.runServerButton = Button(self.runServerFrame, text="Start Server", bg="lawn green")
+        #self.runServerButton.pack()
 
 
 
@@ -170,12 +178,13 @@ class hostGUI:
         pack all frames in proper order (top to bottom)
         '''
         self.connectionInputs.pack()
+        self.speedFrame.pack(side=TOP)
         self.connectButton.pack(side=BOTTOM)
         self.searchFrame.pack()
         self.searchTable.show()
         self.searchKeywordFrame.pack()
         #self.searchTable.pack()
-        self.runServerFrame.pack()
+        #self.runServerFrame.pack()
         self.getFileFrame.pack()
         self.addFileFrame.pack()
 
@@ -212,8 +221,11 @@ class hostGUI:
         description = self.addFileDescText.get()
         location = self.addFileLocationText.get()
         port = self.addFilePortText.get()
+        speed = self.speedSelection
+        fileParams = [filename, description, location, port, speed]
+        fileParams = ",".join(params)
         fullCentralServerURL = self.centralServerURL + ":" + self.centralServerPort
-        response = req.request(method='SITE', url=fullCentralServerURL)
+        response = req.request(method='SITE', url=fullCentralServerURL, params=fileParams)
 
     def search(self):
         print("Searching for keyword in current file index...")
