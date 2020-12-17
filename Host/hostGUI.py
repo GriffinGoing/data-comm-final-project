@@ -6,11 +6,13 @@ from tkinter import messagebox
 import tkinter.font as tkFont
 from tkintertable import TableCanvas, TableModel
 import subprocess
+import multiprocessing
 import runpy
 from threading import Thread
 sys.path.append('..')
 import hostFTPServer
 from HostClient import *
+import requests
 
 
 # REQUIRE PYTHON 3
@@ -28,7 +30,8 @@ def runServer():
     #runpy.run_module(mod_name = 'server') # this doesn't listen properly, and doesn't offer logging. below works for gnome terms
     #os.system("gnome-terminal -x python server.py")
     #subprocess.run(["python", "server.py"], )
-    hostFTPServer.main()
+    #hostFTPServer.main()
+    Thread(target=runServer).start()
 
 
 class hostGUI:
@@ -38,6 +41,7 @@ class hostGUI:
         The host's FTP client instance
         '''
         self.client = HostClient()
+        self.fileDownloadClient = HostClient()
 
         '''
         Boolean for whether we're searching or not. defines the info to load into the table
@@ -91,11 +95,6 @@ class hostGUI:
         self.hostnameText = Entry(self.connectionInputs)
         self.hostnameText.grid(row=1, column=4)
 
-        self.speedFrame = Frame(self.connectionLabelFrame)
-        self.speedLabel = Label(self.speedFrame, text="Speed:")
-        self.speedSelection = StringVar(self.top)
-        self.speedChoices = { 'Ethernet'}
-        self.speedMenu = OptionMenu(self.speedFrame, self.speedSelection, *self.speedChoices)
 
         self.connectButton = Button(self.connectionLabelFrame, text="Connect", command=self.connect)
 
@@ -114,35 +113,72 @@ class hostGUI:
 
         # working on a table, just a placeholder
         self.searchFrame = Frame(self.searchLabelFrame)
-        self.searchTable = TableCanvas(self.searchFrame)
+        self.searchTable = TableCanvas(self.searchFrame, width=800)
         self.searchTable.importCSV("files.csv")
         #self.searchTable = Text(self.searchLabelFrame, height=7)
 
-        self.enterCommandFrame = Frame(self.FTPLabelFrame)
-        self.enterCommandLabel = Label(self.enterCommandFrame, text="Enter Command:")
-        self.enterCommandLabel.grid(row=0, column=0)
-        self.enterCommandText = Entry(self.enterCommandFrame)
-        self.enterCommandText.grid(row=0, column=1)
-        self.enterCommandButton = Button(self.enterCommandFrame, text="Go", command=self.runFTPCommand)
-        self.enterCommandButton.grid(row=0, column=2)
+        self.runServerFrame = Frame(self.FTPLabelFrame)
+        self.runServerButton = Button(self.runServerFrame, text="Start Server", bg="lawn green")
+        self.runServerButton.pack()
 
-        # needs format specifics but will work
-        self.commandTextOutput = Text(self.FTPLabelFrame, height=7)
+
+
+        self.getFileFrame = Frame(self.FTPLabelFrame)
+        self.fileNameLabel = Label(self.getFileFrame, text="Filename:")
+        self.fileNameLabel.grid(row=0, column=0)
+        self.fileNameText = Entry(self.getFileFrame)
+        self.fileNameText.grid(row=0, column=1)
+        self.fileLocationLabel = Label(self.getFileFrame, text="Location:")
+        self.fileLocationLabel.grid(row=0, column=2)
+        self.fileLocationText = Entry(self.getFileFrame)
+        self.fileLocationText.grid(row=0, column=3)
+        self.filePortLabel = Label(self.getFileFrame, text="Port:")
+        self.filePortLabel.grid(row=0, column=4)
+        self.filePortText = Entry(self.getFileFrame)
+        self.filePortText.grid(row=0, column=5)
+        self.getFileButton = Button(self.getFileFrame, text="Download File", command=self.downloadFile)
+        self.getFileButton.grid(row=0, column=6)
+
+        self.addFileFrame = Frame(self.FTPLabelFrame)
+        self.addFileNameLabel = Label(self.addFileFrame, text="Filename:")
+        self.addFileNameLabel.grid(row=0, column=0)
+        self.addFileNameText = Entry(self.addFileFrame)
+        self.addFileNameText.grid(row=0, column=1)
+        self.addFileDescLabel = Label(self.addFileFrame, text="Description:")
+        self.addFileDescLabel.grid(row=0, column=2)
+        self.addFileDescText = Entry(self.addFileFrame)
+        self.addFileDescText.grid(row=0, column=3)
+        self.addFileLocationLabel = Label(self.addFileFrame, text="Location:")
+        self.addFileLocationLabel.grid(row=0, column=4)
+        self.addFileLocationText = Entry(self.addFileFrame)
+        self.addFileLocationText.grid(row=0, column=5)
+        self.addFilePortLabel = Label(self.addFileFrame, text="Port:")
+        self.addFilePortLabel.grid(row=0, column=6)
+        self.addFilePortText = Entry(self.addFileFrame)
+        self.addFilePortText.grid(row=0, column=7)
+        self.speedLabel = Label(self.addFileFrame, text="Speed:")
+        self.speedLabel.grid(row=0, column=8)
+        self.speedSelection = StringVar(self.top)
+        self.speedChoices = {'Ethernet', "TL1", "TL2"}
+        self.speedMenu = OptionMenu(self.addFileFrame, self.speedSelection, *self.speedChoices)
+        self.speedMenu.grid(row=0, column=9)
+        self.addFileButton = Button(self.addFileFrame, text="Add File")
+        self.addFileButton.grid(row=0, column=10)
+
 
         '''
         pack all frames in proper order (top to bottom)
         '''
         self.connectionInputs.pack()
-        self.speedLabel.pack(side=LEFT)
-        self.speedMenu.pack(side=RIGHT)
-        self.speedFrame.pack()
         self.connectButton.pack(side=BOTTOM)
         self.searchFrame.pack()
         self.searchTable.show()
         self.searchKeywordFrame.pack()
         #self.searchTable.pack()
-        self.enterCommandFrame.pack()
-        self.commandTextOutput.pack()
+        self.runServerFrame.pack()
+        self.getFileFrame.pack()
+        self.addFileFrame.pack()
+
 
     def connect(self):
         serverHostname = self.serverHostnameText.get()
@@ -150,6 +186,8 @@ class hostGUI:
         username = self.userNameText.get()
         hostname = self.hostnameText.get()
         #speed = self.speedMenu.get()
+        self.centralServerPort = port
+        self.centralServerURL = serverHostname
         print("Connecting to " + serverHostname + ":" + port + " as " + username + " from " + hostname + " at speed <later>...")
         connectionResult = self.client.connect(serverHostname, port, username)
         if (connectionResult == 1):
@@ -161,6 +199,21 @@ class hostGUI:
             print("Connected...")
             self.updateFileIndex()
 
+    def downloadFile(self):
+        filename = self.fileNameText.get()
+        location = self.fileLocationText.get()
+        port = self.filePortText.get()
+        print("Downloading " + filename + " from " + location)
+        self.fileDownloadClient.downloadFile(filename, location, port)
+
+
+    def addFile(self):
+        filename = self.addFileNameText.get()
+        description = self.addFileDescText.get()
+        location = self.addFileLocationText.get()
+        port = self.addFilePortText.get()
+        fullCentralServerURL = self.centralServerURL + ":" + self.centralServerPort
+        response = req.request(method='SITE', url=fullCentralServerURL)
 
     def search(self):
         print("Searching for keyword in current file index...")
@@ -195,7 +248,7 @@ class hostGUI:
         print("Number of Files Matching Keyword: " + str(i))
 
         with open('searchResults.csv', 'w') as searchResults:
-            row = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION', 'PORT']
             writer = csv.writer(searchResults)
             writer.writerow(row)
             for row in matches:
@@ -216,7 +269,7 @@ class hostGUI:
 
     def updateFileIndex(self):
         print("Updating file index...")
-        print("SEARCHING: " + str(self.searching))
+        #print("SEARCHING: " + str(self.searching))
         self.client.fetchFileIndex()
         if (self.searching == False):
             self.searchTable.importCSV("files.csv")
@@ -227,7 +280,7 @@ class hostGUI:
 
     def resetFileIndex(self):
         with open('files.csv', 'w') as files:
-            row = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION', 'PORT', 'SPEED']
             writer = csv.writer(files)
 
             writer.writerow(row)
@@ -235,7 +288,7 @@ class hostGUI:
 
     def resetSearchIndex(self):
         with open('searchResults.csv', 'w') as searchResults:
-            row = ['FILENAME', 'DESCRIPTION', 'LOCATION']
+            row = ['FILENAME', 'DESCRIPTION', 'LOCATION', 'PORT', 'SPEED']
             writer = csv.writer(searchResults)
 
             writer.writerow(row)
